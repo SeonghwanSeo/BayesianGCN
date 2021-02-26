@@ -14,7 +14,9 @@ from models import BayesianGCNModel
 """
 At Pytorch 1.7.1, there is incorrect Warning in torch.nn.Module.container.
 pytorch github - Fix incorrect warnings in ParameterList/Dict (#48315) 
-Change the torch module source code before run model. Otherwise, "warnings.warn("Setting attributes on ParameterList is not supported.")" will be printed when you call model.train() or model.eval() 
+
+Before running the model, modify the torch module source code as shown below.
+Otherwise, 'warnings.warn("Setting attributes on ParameterList is not supported.")' will be printed everytime when you call model.train() or model.eval() 
 
 Before
 class ParameterList(Module):
@@ -35,7 +37,6 @@ class ParameterList(Module):
         super(ParameterList, self).__setattr__(key, value)
     ...
 """
-
 
 def main() :
     ngpu = 1 
@@ -134,7 +135,6 @@ def eval_step(model, batch, device, n_sampling) :
     loss1 = np.mean(np.array(_loss1), axis=0)
     loss2 = sum(_loss2)/n_sampling
     return y_pred, y_true, loss1, loss2
-
 
 loss_fn = nn.BCELoss(reduction='none')
 def step(model, batch, device, optimizer = None) :
